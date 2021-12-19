@@ -26,6 +26,21 @@ type Child struct {
 	Path     string
 }
 
+func Walk(c *Child, path string) error {
+	fmt.Printf("walken and \n\tpath is %s\n\tc.Path is %s\n", path, c.Path)
+	c.Path = path
+	if len(c.Children) == 0 {
+		return nil
+	} else {
+		c.Path = fmt.Sprintf("%s/%s", c.Path, c.Name)
+		for i, _ := range c.Children {
+			Walk(&c.Children[i], c.Path)
+		}
+	}
+
+	return nil
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "bm-cli",
 	Short: "Parse and flatten bookmarks while maintaining file structure",
@@ -42,7 +57,9 @@ var rootCmd = &cobra.Command{
 			fmt.Println(err)
 		}
 
-		fmt.Println(bm)
+		Walk(&bm.Roots.BookmarkBar, "")
+
+		fmt.Printf("%+v\n", bm)
 	},
 }
 
