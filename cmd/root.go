@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -26,13 +27,16 @@ type Child struct {
 	Path     string
 }
 
+func ScrubPath(s string) string {
+	return strings.ToLower(strings.Replace(s, " ", "_", -1))
+}
 func Walk(c *Child, path string) error {
 	fmt.Printf("walken and \n\tpath is %s\n\tc.Path is %s\n", path, c.Path)
 	c.Path = path
 	if len(c.Children) == 0 {
 		return nil
 	} else {
-		c.Path = fmt.Sprintf("%s/%s", c.Path, c.Name)
+		c.Path = ScrubPath(fmt.Sprintf("%s/%s", c.Path, c.Name))
 		for i, _ := range c.Children {
 			Walk(&c.Children[i], c.Path)
 		}
