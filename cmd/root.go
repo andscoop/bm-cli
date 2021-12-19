@@ -7,7 +7,9 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -28,15 +30,19 @@ type Child struct {
 }
 
 func ScrubPath(s string) string {
-	return strings.ToLower(strings.Replace(s, " ", "_", -1))
+	// todo dedeupe "_"
+	re, err := regexp.Compile(`[^\w/]`)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return strings.ToLower(re.ReplaceAllString(s, "_"))
 }
+
 func Walk(c *Child, path string) error {
-	fmt.Printf("walken and \n\tpath is %s\n\tc.Path is %s\n", path, c.Path)
-	c.Path = path
+	c.Path = ScrubPath(fmt.Sprintf("%s/%s", c.Path, c.Name))
 	if len(c.Children) == 0 {
 		return nil
 	} else {
-		c.Path = ScrubPath(fmt.Sprintf("%s/%s", c.Path, c.Name))
 		for i, _ := range c.Children {
 			Walk(&c.Children[i], c.Path)
 		}
@@ -44,6 +50,9 @@ func Walk(c *Child, path string) error {
 
 	return nil
 }
+
+// todo print of bookmarks (flat, nested?)
+// todo create bookmark files
 
 var rootCmd = &cobra.Command{
 	Use:   "bm-cli",
