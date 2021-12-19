@@ -19,12 +19,11 @@ type ChromeBookmarks struct {
 }
 
 type Child struct {
-	Name        string      `json:"name"`
-	Type        string      `json:"type"`
-	Url         string      `json:"url"`
-	ChildrenRaw interface{} `json:"children"`
-	Children    []Child
-	Path        string
+	Name     string  `json:"name"`
+	Type     string  `json:"type"`
+	Url      string  `json:"url"`
+	Children []Child `json:"children"`
+	Path     string
 }
 
 var rootCmd = &cobra.Command{
