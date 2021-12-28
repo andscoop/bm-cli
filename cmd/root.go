@@ -5,6 +5,7 @@ Copyright © 2021 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/andscoop/bm-cli/cbm"
@@ -13,6 +14,7 @@ import (
 
 func init() {
 	rootCmd.AddCommand(ListCmd)
+	rootCmd.AddCommand(FindCmd)
 }
 
 var rootCmd = &cobra.Command{
@@ -27,13 +29,27 @@ var ListCmd = &cobra.Command{
 	Run:   lsCmd,
 }
 
+var path string = "/Users/andrew.cooper/Library/Application Support/Google/Chrome/Default/Bookmarks"
+
 func lsCmd(cmd *cobra.Command, args []string) {
-	path := "/Users/andrew.cooper/Library/Application Support/Google/Chrome/Default/Bookmarks"
 	err := cbm.FlatList(path)
 	if err != nil {
 		panic(err)
 	}
+}
 
+var FindCmd = &cobra.Command{
+	Use:   "find",
+	Short: "Find the url associated with bookmark id",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		url, err := cbm.Find(path, args[0])
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(url)
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

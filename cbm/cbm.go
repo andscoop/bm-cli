@@ -63,6 +63,48 @@ func (c *Child) flatList(path string) error {
 	return nil
 }
 
+func Find(fn, id string) (string, error) {
+	bm, err := unmarshalBookmarks(fn)
+	if err != nil {
+		return "", err
+	}
+
+	c, err := bm.Roots.BookmarkBar.find(id)
+	if err != nil || c == nil {
+		return "", err
+	}
+
+	return c.Url, nil
+}
+
+func (c *Child) find(id string) (*Child, error) {
+	var found *Child
+
+	err := c.walk(func(child *Child) error {
+		if child.Id == id {
+			found = child
+			return nil
+		}
+		return nil
+	})
+	return found, err
+}
+
+type walkFunc func(child *Child) error
+
+func (c *Child) walk(f walkFunc) error {
+	err := f(c)
+	if err != nil {
+		return err
+	}
+
+	for i, _ := range c.Children {
+		c.Children[i].walk(f)
+	}
+
+	return nil
+}
+
 func ScrubPath(s string) string {
 	// todo dedeupe "_"
 	re, err := regexp.Compile(`[^\w/]`)
