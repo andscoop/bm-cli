@@ -1,11 +1,15 @@
 package cbm
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 )
+
+// todo print of bookmarks (flat, nested?)
 
 type ChromeBookmarks struct {
 	Roots struct {
@@ -14,11 +18,49 @@ type ChromeBookmarks struct {
 }
 
 type Child struct {
+	Id       string  `json:"id"`
 	Name     string  `json:"name"`
 	Type     string  `json:"type"`
 	Url      string  `json:"url"`
 	Children []Child `json:"children"`
 	Path     string
+}
+
+func unmarshalBookmarks(path string) (*ChromeBookmarks, error) {
+	file, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var bm ChromeBookmarks
+	err = json.Unmarshal(file, &bm)
+	if err != nil {
+		return nil, err
+	}
+
+	return &bm, nil
+}
+
+func FlatList(fn string) error {
+	bm, err := unmarshalBookmarks(fn)
+	if err != nil {
+		return err
+	}
+
+	return bm.Roots.BookmarkBar.flatList("")
+}
+
+func (c *Child) flatList(path string) error {
+	c.Path = fmt.Sprintf("%s/%s", path, c.Name)
+	if len(c.Children) == 0 {
+		fmt.Printf("%s: %s\n", c.Id, c.Path)
+	} else {
+		for i, _ := range c.Children {
+			c.Children[i].flatList(c.Path)
+		}
+	}
+
+	return nil
 }
 
 func ScrubPath(s string) string {
@@ -28,17 +70,4 @@ func ScrubPath(s string) string {
 		log.Fatal(err)
 	}
 	return strings.ToLower(re.ReplaceAllString(s, "_"))
-}
-
-func (c *Child) Walk(path string) error {
-	c.Path = ScrubPath(fmt.Sprintf("%s/%s", c.Path, c.Name))
-	if len(c.Children) == 0 {
-		return nil
-	} else {
-		for i, _ := range c.Children {
-			c.Children[i].Walk(c.Path)
-		}
-	}
-
-	return nil
 }

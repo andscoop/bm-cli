@@ -5,37 +5,35 @@ Copyright © 2021 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"encoding/json"
-	"fmt"
 	"os"
 
 	"github.com/andscoop/bm-cli/cbm"
 	"github.com/spf13/cobra"
 )
 
-// todo print of bookmarks (flat, nested?)
-// todo create bookmark files
+func init() {
+	rootCmd.AddCommand(ListCmd)
+}
 
 var rootCmd = &cobra.Command{
-	Use:   "bm-cli",
-	Short: "Parse and flatten bookmarks while maintaining file structure",
-	Run: func(cmd *cobra.Command, args []string) {
-		fn := "/Users/andrew.cooper/Library/Application Support/Google/Chrome/Default/Bookmarks"
-		file, err := os.ReadFile(fn)
-		if err != nil {
-			fmt.Println(err)
-		}
+	Use:   "cbm",
+	Short: "Aliased to 'ls'",
+	Run:   lsCmd,
+}
 
-		var bm cbm.ChromeBookmarks
-		err = json.Unmarshal(file, &bm)
-		if err != nil {
-			fmt.Println(err)
-		}
+var ListCmd = &cobra.Command{
+	Use:   "ls",
+	Short: "Output bookmarks in flattened list, suitable for fzf",
+	Run:   lsCmd,
+}
 
-		bm.Roots.BookmarkBar.Walk("")
+func lsCmd(cmd *cobra.Command, args []string) {
+	path := "/Users/andrew.cooper/Library/Application Support/Google/Chrome/Default/Bookmarks"
+	err := cbm.FlatList(path)
+	if err != nil {
+		panic(err)
+	}
 
-		fmt.Printf("%+v\n", bm)
-	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
