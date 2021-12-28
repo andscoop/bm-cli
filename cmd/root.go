@@ -7,6 +7,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/andscoop/bm-cli/cbm"
 	"github.com/spf13/cobra"
@@ -43,7 +44,11 @@ var FindCmd = &cobra.Command{
 	Short: "Find the url associated with bookmark id",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		url, err := cbm.Find(path, args[0])
+		var id string
+		parts := strings.Split(args[0], ":")
+		id = parts[0]
+
+		url, err := cbm.Find(path, id)
 		if err != nil {
 			panic(err)
 		}
