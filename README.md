@@ -20,6 +20,6 @@ open "$(./bm-cli find "$(./bm-cli ls | fzf)")"
 ## TODO
 - Allow for piping from std in for finding bookmarks
 - Find should take many bookmark IDs. This opens possibility for opening folders/batches of bookmarks
-
+- bring in basic config and chrome bookmark fp discovery
 
 

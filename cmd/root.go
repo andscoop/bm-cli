@@ -44,24 +44,53 @@ var FindCmd = &cobra.Command{
 	Use:   "find",
 	Short: "Find the url associated with bookmark id",
 	Run: func(cmd *cobra.Command, args []string) {
-		var parts []string
-
-		if len(args) > 0 {
-			parts = strings.Split(args[0], ":")
-		} else {
-			scanner := bufio.NewScanner(os.Stdin)
-			if scanner.Scan() {
-				parts = strings.Split(scanner.Text(), ":")
-			}
-		}
-
-		url, err := cbm.Find(path, parts[0])
+		urls, err := find(args)
 		if err != nil {
 			panic(err)
 		}
-
-		fmt.Println(url)
+		for _, url := range urls {
+			fmt.Println(url)
+		}
 	},
+}
+
+var OpenCmd = &cobra.Command{
+	Use:   "open",
+	Short: "Find the url associated with bookmark id",
+	Run: func(cmd *cobra.Command, args []string) {
+		urls, err := find(args)
+		if err != nil {
+			panic(err)
+		}
+		for _, url := range urls {
+			fmt.Println(url)
+		}
+	},
+}
+
+func find(args []string) ([]string, error) {
+	var ids []string
+	var rawId []string
+
+	if len(args) > 0 {
+		for _, raw := range args {
+			rawId = strings.Split(raw, ":")
+			ids = append(ids, rawId[0])
+		}
+	} else {
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			rawId = strings.Split(scanner.Text(), ":")
+			ids = append(ids, rawId[0])
+		}
+	}
+
+	urls, err := cbm.Find(path, ids)
+	if err != nil {
+		return ids, nil
+	}
+
+	return urls, nil
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.

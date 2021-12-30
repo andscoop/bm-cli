@@ -63,31 +63,46 @@ func (c *Child) flatList(path string) error {
 	return nil
 }
 
-func Find(fn, id string) (string, error) {
+func Find(fn string, ids []string) ([]string, error) {
+	var urls []string
+
 	bm, err := unmarshalBookmarks(fn)
 	if err != nil {
-		return "", err
+		return urls, err
 	}
 
-	c, err := bm.Roots.BookmarkBar.find(id)
-	if err != nil || c == nil {
-		return "", err
+	found, err := bm.Roots.BookmarkBar.find(ids)
+	if err != nil || len(found) == 0 {
+		return urls, err
 	}
 
-	return c.Url, nil
+	for _, c := range found {
+		urls = append(urls, c.Url)
+	}
+
+	return urls, nil
 }
 
-func (c *Child) find(id string) (*Child, error) {
-	var found *Child
+func (c *Child) find(ids []string) ([]*Child, error) {
+	var found []*Child
 
 	err := c.walk(func(child *Child) error {
-		if child.Id == id {
-			found = child
+		if contains(ids, child.Id) {
+			found = append(found, child)
 			return nil
 		}
 		return nil
 	})
 	return found, err
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
 
 type walkFunc func(child *Child) error
