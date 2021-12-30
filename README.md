@@ -7,18 +7,20 @@ This utility came out of a desire for more searchable and discoverable bookmarks
 ## Examples
 
 List all bookmarks
-`./bm-cli ls`
+`./cbm ls`
 
 Pipe all bookmarks to `fzf`
-`/bm-cli ls | fzf)`
+`/cbm ls | fzf)`
 
 Use `fzf` to find a bookmark and open bookmark in your default browser
 ```
-./bm-cli ls | fzf | ./bm-cli open
+./cbm ls | fzf | ./cbm open
 ```
 
 ## TODO
-- Find should take many bookmark IDs. This opens possibility for opening folders/batches of bookmarks
 - bring in basic config and chrome bookmark fp discovery
+- cbm open should probably carry most of the water here
+    - `cbm open --fzf` should run eqivilant of `cbm ls | fzf | cbm open`
+- allow for customization of what is output in `cbm ls` this will allow for users to customize for their searching preferences
 
 
