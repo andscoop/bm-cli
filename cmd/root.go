@@ -8,6 +8,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/andscoop/bm-cli/cbm"
@@ -17,6 +18,7 @@ import (
 func init() {
 	rootCmd.AddCommand(ListCmd)
 	rootCmd.AddCommand(FindCmd)
+	rootCmd.AddCommand(OpenCmd)
 }
 
 var rootCmd = &cobra.Command{
@@ -58,12 +60,16 @@ var OpenCmd = &cobra.Command{
 	Use:   "open",
 	Short: "Find the url associated with bookmark id",
 	Run: func(cmd *cobra.Command, args []string) {
+		executable := "open"
 		urls, err := find(args)
 		if err != nil {
 			panic(err)
 		}
 		for _, url := range urls {
-			fmt.Println(url)
+			_, err := exec.Command(executable, url).Output()
+			if err != nil {
+				fmt.Printf("Err: %s not found. Ensure you have %s installed and in your $PATH\n", executable, executable)
+			}
 		}
 	},
 }
