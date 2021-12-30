@@ -19,8 +19,9 @@ Use `fzf` to find a bookmark and open bookmark in your default browser
 
 ## TODO
 - bring in basic config and chrome bookmark fp discovery
-- cbm open should probably carry most of the water here
+- `cbm open` should probably carry most of the water here
     - `cbm open --fzf` should run eqivilant of `cbm ls | fzf | cbm open`
+    - any reason to not make this the default behavior of `cbm` with no args?
 - allow for customization of what is output in `cbm ls` this will allow for users to customize for their searching preferences
 
 
