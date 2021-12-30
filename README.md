@@ -14,11 +14,10 @@ Pipe all bookmarks to `fzf`
 
 Use `fzf` to find a bookmark and open bookmark in your default browser
 ```
-open "$(./bm-cli find "$(./bm-cli ls | fzf)")"
+./bm-cli ls | fzf | ./bm-cli open
 ```
 
 ## TODO
-- Allow for piping from std in for finding bookmarks
 - Find should take many bookmark IDs. This opens possibility for opening folders/batches of bookmarks
 - bring in basic config and chrome bookmark fp discovery
 
